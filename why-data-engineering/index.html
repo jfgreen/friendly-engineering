@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="James Green">
+        <link rel="stylesheet" href="https:&#x2F;&#x2F;friendly.engineering&#x2F;style.css" />
+        <link href="https:&#x2F;&#x2F;friendly.engineering&#x2F;rss.xml" rel="alternate" type="application/rss+xml" title="Friendly Engineering" />
+        
+    <meta name="description" content="The who, what and why of pipelines, persistence and platforms.">
+    <title>The Value of Data Engineering </title>
+
+    </head>
+    <body>
+        
+    <h1>The Value of Data Engineering </h1>
+    <h2>The who, what and why of pipelines, persistence and platforms.</h2>
+    <p>2020&#x2F;02&#x2F;16</p>
+    <hr />
+    <p>A few years ago a colleague of mine explained how, when asked about his
+role, he would glibly respond, &quot;I do things with computers&quot;. At the time this
+sounded fairly reasonable. I too have fun doing things with computers and will
+always consider myself something of a generalist technologist.</p>
+<p>However, having been involved in a variety of projects, I've begun to realise
+it's the data-intensive ones which particularly hold my interest. So I'm now
+embracing this and taking on data engineering as a full time role.</p>
+<p>Whilst it's not the first time I have held this job title, working in
+tech consulting has broadened my horizons on the various challenges folks have
+getting value from their data and I find myself returning to the role with
+newfound enthusiasm.</p>
+<h3 id="distilling-data-enabling-decision-making">Distilling Data &amp; Enabling Decision Making</h3>
+<p>The goal of this post was to share with you why I think data engineering is a
+pretty exciting discipline. And that remains the case. But, truth be told, as I
+started writing I had a minor identity crisis as to what exactly my role as a
+data engineer should entail. So I had a go at exploring some definitions.</p>
+<p>Data engineers are variously described as being responsible for:</p>
+<ul>
+<li>Building and maintaining data pipelines.</li>
+<li>Ensuring data is clean, reliable and accessible.</li>
+<li>Using distributed computing to solve data-intensive problems.</li>
+<li>Working with data scientists to deploy machine learning solutions.</li>
+</ul>
+<p>Is this a fair characterisation? Well, sort of. The above responsibilities do
+describe activities that both myself and colleagues have carried out while
+working on data projects. But, this explanation doesn't really touch on
+<em>why</em> we do this work. Why do we build pipelines, optimise queries and scale
+out clusters? What end are we working towards? Here is my attempt at
+defining data engineering in terms of what it enables.</p>
+<blockquote>
+<p>The practice of building software that can reliably distill data into a
+meaningful form, such that a human or machine can easily make a decision
+and/or take an action.</p>
+</blockquote>
+<p>Ultimately, it's a lot easier to demonstrate value when you empower people to
+confidently make a decision, or at the very least, reduce uncertainty. I
+wouldn't even suggest we necessarily need super sophisticated techniques to do
+so. Never underestimate the power in having the right data in the right
+place, with some basic analysis.</p>
+<p>This definition could also perhaps apply to data science, but I think that's
+OK given the highly complementary nature of these two roles. In fact, as a
+colleague of mine helpfully pointed out, if the act of &quot;distilling data&quot; is
+orthogonal (i.e not exclusive to engineers or scientists), then the role of the
+data engineer is about doing so with a focus on reliability, data quality and
+data availability. I agree with this and think a key enabler for doing so is to
+bring all the principles we know and love about making high quality software to
+the realm of data. This includes practices like test driven development, domain
+modeling, observability, etc. I would also make the case that in certain
+circumstances it also entails building platforms to enable economy of scale.
+(The <a href="https://martinfowler.com/articles/data-monolith-to-mesh.html">Data Mesh</a> architecture is a great example of how to do this
+elegantly.)</p>
+<h3 id="reasons-to-like-data-engineering">Reasons to like Data Engineering</h3>
+<p>So now we have a bit more of an understanding as to what data engineers are
+responsible for, let's explore some of reasons you might consider pursuing it as
+a skill. Here are some things that motivated me.</p>
+<h4 id="close-to-the-domain">Close to the domain</h4>
+<p>Unlike my previous role as an infrastructure developer*, data engineering
+fully immerses you within a particular domain. Calculating sales forecast for a
+supermarket? You are probably going to learn a fair bit about the economics of
+avocados. Building a routing service to plan journeys? You run the risk of
+eventually becoming something of a train geek.</p>
+<p>Every dataset has its own quirks. For example, while working within automotive
+retail I uncovered some quite interesting 'rare colours' of car (colours that
+only appear once in a dataset of several million cars). I was amused to
+discover that car manufacturers would do things like describe a completely
+unremarkable SUV as being &quot;Mystic Beige&quot; - definitely an oxymoron.</p>
+<p>I love finding a weird outlier in the dataset and trying to uncover the story
+behind it. <em>&quot;What on earth happened here, did a single customer really order
+187 mangos?&quot;</em> Working in data is rewarding for those who are fundamentally very
+curious.</p>
+<p>Also, it's gratifying to see users glean insights from data you have delivered.
+This is great. It's a valuable form of feedback and it's easy to see the
+impact of your work.</p>
+<p>* <em>Big respect for infra-devs. This work is super valuable, sometimes under
+appreciated and so so vital to get right.</em></p>
+<h4 id="but-still-close-to-the-metal">But still close to the metal</h4>
+<p>Ultimately, all data, whether the colour of a car, or a count of mangos sold,
+is stored as a series of bits and bytes in one or more computers. Whilst I enjoy
+indulging my data-curiosity, I also find a lot of satisfaction in learning
+about the lower-level mechanics of how these values move about the computer.
+Not always, but often enough, having some appreciation of this can also be
+particularly important when designing and implementing data solutions.</p>
+<p>This applies to all sorts of cases. Maybe the data is big, maybe the data is
+small but computationally expensive. Perhaps the data needs to be fetched from
+a distant machine running a strange and arcane legacy system. In these
+situations, where performance starts to matter, we need to pay attention as to
+how the shape of the problem intersects with the strengths and weaknesses of
+the hardware we are building on top of.</p>
+<p>This concept of designing software to take into account the design of the
+underlying hardware is sometimes expressed as &quot;mechanical sympathy&quot;. This term
+was popularised by <a href="https://mechanical-sympathy.blogspot.com">Martin Thompson</a> and attributed to the Formula 1
+racing champion Jackie Stewart. He &quot;believed the best drivers had enough
+understanding of how a machine worked so they could work in harmony with it&quot;.</p>
+<p>We can use this principle to guide many of our design choices when coming up
+with solutions. For instance:</p>
+<ul>
+<li>Data locality and <a href="https://gist.github.com/hellerbarde/2843375">latency</a>: Are we fetching data from the CPU cache,
+memory, disk or network?</li>
+<li>Memory vs compute trade-off: Is it more efficient to pre-calculate values at
+the cost of using more memory?</li>
+<li>Parallelism: Would this be faster if we took advantage of more CPU cores?</li>
+<li>Data-oriented programming: Should my collection of data be represented as an
+array of structs, or a struct of arrays? Would vectorisation be faster?</li>
+<li>Database choice: Is this database technology designed for analytical
+workloads? What indexes should we use?</li>
+<li>Lazy evaluation: Can we process the data as a stream instead of loading the
+entire data set at once?</li>
+</ul>
+<p>Even when performance isn't as much of a concern, there are still compelling
+economical and ecological arguments to be made for being at least mindful of
+this and writing software that uses less resources.</p>
+<h4 id="room-for-innovation">Room for innovation</h4>
+<p>The other main reason I want to invest in data engineering is because the
+entire &quot;data&quot; field continues to have lots of interesting developments.</p>
+<p>There are focused but useful tools such as <a href="https://www.getdbt.com">DBT</a> that help compose data
+transformations. There are projects like <a href="https://arrow.apache.org">Apache Arrow</a> which aim to
+establish solid foundations for the interplay of data between different
+technologies in the open source ecosystem. We have programming languages such
+as Rust that demonstrate a <a href="https://andygrove.io/2018/01/rust-is-for-big-data/">lot of potential for solving data intensive
+problems</a>.</p>
+<p>Exciting happenings in the ops space could be beneficial to experiment with.
+For example, instrumenting data pipelines for <a href="https://docs.honeycomb.io/learning-about-observability/intro-to-observability/">observability</a>. We are also
+starting to see examples of how to do <a href="https://martinfowler.com/articles/cd4ml.html">continuous delivery for machine
+learning</a>.</p>
+<p>Beyond technology, the shape of collaboration is also evolving. Instead of a
+central team managing pipelines, many are now embedding data engineers in
+product teams.</p>
+<h3 id="being-excited-about-data">Being excited about data</h3>
+<p>If you've read this far, you can see I'm enthusiastic about diving into
+all things data. My plan is to keep writing data-related articles on this
+blog, and I will have some interesting topics to share in due course.</p>
+<p>Let's see what the next decade brings for data engineering and software
+development. Exciting times!</p>
+
+
+    </body>
+</html>

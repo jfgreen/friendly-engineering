@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="James Green">
+        <link rel="stylesheet" href="https:&#x2F;&#x2F;friendly.engineering&#x2F;style.css" />
+        <link href="https:&#x2F;&#x2F;friendly.engineering&#x2F;rss.xml" rel="alternate" type="application/rss+xml" title="Friendly Engineering" />
+        
+    <meta name="description" content="Exploring the memory footprint of different Python data representations.">
+    <title>Python Memory Usage</title>
+
+    </head>
+    <body>
+        
+    <h1>Python Memory Usage</h1>
+    <h2>Exploring the memory footprint of different Python data representations.</h2>
+    <p>2020&#x2F;03&#x2F;04</p>
+    <hr />
+    <p>Recently my <a href="https://twitter.com/aiwatko">colleague</a> and I were using Python to process several GB worth
+of CSV data. We realised this dataset was big enough for us to be mindful of
+the overall memory usage of our program. We therefore decided to spend some
+time measuring the efficiency of the various data representations available.</p>
+<p>We considered representing each data item using a:</p>
+<ul>
+<li>Dictionary</li>
+<li>Named Tuple</li>
+<li>Data Class</li>
+<li>Class</li>
+<li>Data Class / Class with slots</li>
+</ul>
+<h3 id="dictionary">Dictionary</h3>
+<p>Very flexible, lacks any explicit expectations around the fields each item
+should contain.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#8e908c;"># Dictionary
+
+</span><span style="color:#111111;">fruit_as_dict </span><span style="color:#3e999f;">= </span><span style="color:#c99e00;">dict</span><span style="color:#4271ae;">(</span><span style="color:#f07219;">name</span><span style="color:#3e999f;">=</span><span style="color:#839c00;">&#39;mango&#39;</span><span style="color:#4271ae;">, </span><span style="color:#f07219;">price</span><span style="color:#3e999f;">=</span><span style="color:#f07219;">123</span><span style="color:#4271ae;">, </span><span style="color:#f07219;">colour</span><span style="color:#3e999f;">=</span><span style="color:#839c00;">&#39;red&#39;</span><span style="color:#4271ae;">)
+</span></code></pre><h3 id="named-tuple">Named Tuple</h3>
+<p>No frills, lightweight, clearly defines field names. A staple of the standard
+library since Python 2.6.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#8e908c;"># Named Tuple
+
+</span><span style="color:#8959a8;">import </span><span style="color:#111111;">collections
+
+TupleFruit </span><span style="color:#3e999f;">= </span><span style="color:#4271ae;">collections.</span><span style="color:#c82728;">namedtuple</span><span style="color:#4271ae;">(</span><span style="color:#839c00;">&#39;TupleFruit&#39;</span><span style="color:#4271ae;">, [</span><span style="color:#839c00;">&#39;name&#39;</span><span style="color:#4271ae;">, </span><span style="color:#839c00;">&#39;price&#39;</span><span style="color:#4271ae;">, </span><span style="color:#839c00;">&#39;colour&#39;</span><span style="color:#4271ae;">])
+
+</span><span style="color:#111111;">fruit_as_named_tuple </span><span style="color:#3e999f;">= </span><span style="color:#c82728;">TupleFruit</span><span style="color:#4271ae;">(</span><span style="color:#839c00;">&#39;mango&#39;</span><span style="color:#4271ae;">, </span><span style="color:#f07219;">123</span><span style="color:#4271ae;">, </span><span style="color:#839c00;">&#39;red&#39;</span><span style="color:#4271ae;">)
+</span></code></pre><h3 id="typed-named-tuple">Typed Named Tuple</h3>
+<p>Named tuple + types. PEP 526 variable annotation syntax makes each field type
+clear.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#8e908c;"># Typed Named Tuple
+
+</span><span style="color:#8959a8;">import </span><span style="color:#111111;">typing
+
+</span><span style="color:#8959a8;">class </span><span style="color:#c99e00;">TypedTupleFruit</span><span style="color:#111111;">(</span><span style="color:#839c00;">typing.NamedTuple</span><span style="color:#111111;">):
+    name: </span><span style="color:#c99e00;">str
+    </span><span style="color:#111111;">price: </span><span style="color:#c99e00;">int
+    </span><span style="color:#111111;">colour: </span><span style="color:#c99e00;">str
+
+</span><span style="color:#111111;">fruit_as_named_typed_tuple </span><span style="color:#3e999f;">= </span><span style="color:#c82728;">TypedTupleFruit</span><span style="color:#4271ae;">(</span><span style="color:#839c00;">&#39;mango&#39;</span><span style="color:#4271ae;">, </span><span style="color:#f07219;">123</span><span style="color:#4271ae;">, </span><span style="color:#839c00;">&#39;red&#39;</span><span style="color:#4271ae;">)
+</span></code></pre><h3 id="data-class">Data Class</h3>
+<p>As with the typed named tuple, a data class very clearly lays out the name and
+type of each field. It has quite a rich <a href="https://docs.python.org/3/library/dataclasses.html">API</a> with useful functions for
+conversion to a tuple or dictionary.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#8e908c;"># Data Class
+
+</span><span style="color:#8959a8;">from </span><span style="color:#111111;">dataclasses </span><span style="color:#8959a8;">import </span><span style="color:#111111;">dataclass
+
+@</span><span style="color:#c82728;">dataclass
+</span><span style="color:#8959a8;">class </span><span style="color:#c99e00;">DataClassFruit</span><span style="color:#111111;">:
+    name: </span><span style="color:#c99e00;">str
+    </span><span style="color:#111111;">price: </span><span style="color:#c99e00;">int
+    </span><span style="color:#111111;">colour: </span><span style="color:#c99e00;">str
+
+</span><span style="color:#111111;">fruit_as_dataclass </span><span style="color:#3e999f;">= </span><span style="color:#c82728;">DataClassFruit</span><span style="color:#4271ae;">(</span><span style="color:#839c00;">&#39;mango&#39;</span><span style="color:#4271ae;">, </span><span style="color:#f07219;">123</span><span style="color:#4271ae;">, </span><span style="color:#839c00;">&#39;red&#39;</span><span style="color:#4271ae;">)
+</span></code></pre><h3 id="data-class-slots">Data Class (Slots)</h3>
+<p>All the advantages of a data class, but consuming less memory by storing value
+references in slots instead of <code>__dict__</code>.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#8e908c;"># Slot Data Class
+
+</span><span style="color:#8959a8;">from </span><span style="color:#111111;">dataclasses </span><span style="color:#8959a8;">import </span><span style="color:#111111;">dataclass
+
+@</span><span style="color:#c82728;">dataclass
+</span><span style="color:#8959a8;">class </span><span style="color:#c99e00;">SlotDataClassFruit</span><span style="color:#111111;">:
+    __slots__ </span><span style="color:#3e999f;">= </span><span style="color:#111111;">(</span><span style="color:#839c00;">&#39;name&#39;</span><span style="color:#111111;">, </span><span style="color:#839c00;">&#39;price&#39;</span><span style="color:#111111;">, </span><span style="color:#839c00;">&#39;colour&#39;</span><span style="color:#111111;">)
+    name: </span><span style="color:#c99e00;">str
+    </span><span style="color:#111111;">price: </span><span style="color:#c99e00;">int
+    </span><span style="color:#111111;">colour: </span><span style="color:#c99e00;">str
+
+</span><span style="color:#111111;">fruit_as_slot_dataclass </span><span style="color:#3e999f;">= </span><span style="color:#c82728;">SlotDataClassFruit</span><span style="color:#4271ae;">(</span><span style="color:#839c00;">&#39;mango&#39;</span><span style="color:#4271ae;">, </span><span style="color:#f07219;">123</span><span style="color:#4271ae;">, </span><span style="color:#839c00;">&#39;red&#39;</span><span style="color:#4271ae;">)
+</span></code></pre><h3 id="class">Class</h3>
+<p>Fully customisable, but potentially requires lots of boilerplate to bring it up
+to feature parity with a data class.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#8e908c;"># Class
+
+</span><span style="color:#8959a8;">class </span><span style="color:#c99e00;">ClassFruit</span><span style="color:#111111;">(</span><span style="color:#839c00;">object</span><span style="color:#111111;">):
+    </span><span style="color:#8959a8;">def </span><span style="color:#4271ae;">__init__</span><span style="color:#111111;">(</span><span style="color:#f07219;">self</span><span style="color:#111111;">, </span><span style="color:#f07219;">name</span><span style="color:#111111;">, </span><span style="color:#f07219;">price</span><span style="color:#111111;">, </span><span style="color:#f07219;">colour</span><span style="color:#111111;">):
+        </span><span style="color:#c82728;">self</span><span style="color:#111111;">.name </span><span style="color:#3e999f;">= </span><span style="color:#111111;">name
+        </span><span style="color:#c82728;">self</span><span style="color:#111111;">.price </span><span style="color:#3e999f;">= </span><span style="color:#111111;">price
+        </span><span style="color:#c82728;">self</span><span style="color:#111111;">.colour </span><span style="color:#3e999f;">= </span><span style="color:#111111;">colour
+
+fruit_as_class </span><span style="color:#3e999f;">= </span><span style="color:#c82728;">ClassFruit</span><span style="color:#4271ae;">(</span><span style="color:#839c00;">&#39;mango&#39;</span><span style="color:#4271ae;">, </span><span style="color:#f07219;">123</span><span style="color:#4271ae;">, </span><span style="color:#839c00;">&#39;red&#39;</span><span style="color:#4271ae;">)
+</span></code></pre><h3 id="class-slots">Class (Slots)</h3>
+<p>Again, we can use slots to reduce memory consumption.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#8e908c;"># Slot Class
+
+</span><span style="color:#8959a8;">class </span><span style="color:#c99e00;">SlotClassFruit</span><span style="color:#111111;">(</span><span style="color:#839c00;">object</span><span style="color:#111111;">):
+    __slots__ </span><span style="color:#3e999f;">= </span><span style="color:#111111;">(</span><span style="color:#839c00;">&#39;name&#39;</span><span style="color:#111111;">, </span><span style="color:#839c00;">&#39;price&#39;</span><span style="color:#111111;">, </span><span style="color:#839c00;">&#39;colour&#39;</span><span style="color:#111111;">)
+    </span><span style="color:#8959a8;">def </span><span style="color:#4271ae;">__init__</span><span style="color:#111111;">(</span><span style="color:#f07219;">self</span><span style="color:#111111;">, </span><span style="color:#f07219;">name</span><span style="color:#111111;">, </span><span style="color:#f07219;">price</span><span style="color:#111111;">, </span><span style="color:#f07219;">colour</span><span style="color:#111111;">):
+        </span><span style="color:#c82728;">self</span><span style="color:#111111;">.name </span><span style="color:#3e999f;">= </span><span style="color:#111111;">name
+        </span><span style="color:#c82728;">self</span><span style="color:#111111;">.price </span><span style="color:#3e999f;">= </span><span style="color:#111111;">price
+        </span><span style="color:#c82728;">self</span><span style="color:#111111;">.colour </span><span style="color:#3e999f;">= </span><span style="color:#111111;">colour
+
+fruit_as_slotclass </span><span style="color:#3e999f;">= </span><span style="color:#c82728;">SlotClassFruit</span><span style="color:#4271ae;">(</span><span style="color:#839c00;">&#39;mango&#39;</span><span style="color:#4271ae;">, </span><span style="color:#f07219;">123</span><span style="color:#4271ae;">, </span><span style="color:#839c00;">&#39;red&#39;</span><span style="color:#4271ae;">)
+</span></code></pre><h3 id="measuring-size">Measuring Size</h3>
+<p>Calling <code>sys.getsizeof</code> with any given object will return its size. However,
+only memory directly used by the object is returned, not the memory usage of
+objects it refers to. We can solve this by walking each object's referents,
+calling <code>getsizeof</code>, until all objects have been measured. The following
+implementation is specifically designed to work for our examples and therefore
+quite simplistic. It does not deal with all types of object and doesn't handle
+cyclical data structures.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#8959a8;">import </span><span style="color:#111111;">sys
+
+</span><span style="color:#8959a8;">def </span><span style="color:#4271ae;">get_size</span><span style="color:#111111;">(</span><span style="color:#f07219;">root_obj</span><span style="color:#111111;">):
+    size </span><span style="color:#3e999f;">= </span><span style="color:#f07219;">0
+    </span><span style="color:#111111;">to_explore </span><span style="color:#3e999f;">= </span><span style="color:#111111;">[root_obj]
+    </span><span style="color:#8959a8;">while </span><span style="color:#4271ae;">len(to_explore) </span><span style="color:#3e999f;">&gt; </span><span style="color:#f07219;">0</span><span style="color:#111111;">:
+        obj </span><span style="color:#3e999f;">= </span><span style="color:#4271ae;">to_explore.</span><span style="color:#c82728;">pop</span><span style="color:#4271ae;">()
+        </span><span style="color:#111111;">size </span><span style="color:#3e999f;">+= </span><span style="color:#4271ae;">sys.</span><span style="color:#c82728;">getsizeof</span><span style="color:#4271ae;">(obj)
+        </span><span style="color:#8959a8;">if </span><span style="color:#4271ae;">isinstance(obj, </span><span style="color:#c99e00;">tuple</span><span style="color:#4271ae;">)</span><span style="color:#111111;">:
+            </span><span style="color:#4271ae;">to_explore.</span><span style="color:#c82728;">extend</span><span style="color:#4271ae;">(obj)
+        </span><span style="color:#8959a8;">if </span><span style="color:#4271ae;">isinstance(obj, Mapping)</span><span style="color:#111111;">:
+            </span><span style="color:#4271ae;">to_explore.</span><span style="color:#c82728;">extend</span><span style="color:#4271ae;">(obj.</span><span style="color:#c82728;">keys</span><span style="color:#4271ae;">())
+            to_explore.</span><span style="color:#c82728;">extend</span><span style="color:#4271ae;">(obj.</span><span style="color:#c82728;">values</span><span style="color:#4271ae;">())
+        </span><span style="color:#8959a8;">if </span><span style="color:#4271ae;">hasattr(obj, </span><span style="color:#839c00;">&#39;__dict__&#39;</span><span style="color:#4271ae;">)</span><span style="color:#111111;">:
+            </span><span style="color:#4271ae;">to_explore.</span><span style="color:#c82728;">append</span><span style="color:#4271ae;">(vars(obj))
+        </span><span style="color:#8959a8;">if </span><span style="color:#4271ae;">hasattr(obj, </span><span style="color:#839c00;">&#39;__slots__&#39;</span><span style="color:#4271ae;">)</span><span style="color:#111111;">:
+            </span><span style="color:#4271ae;">to_explore.</span><span style="color:#c82728;">extend</span><span style="color:#4271ae;">([getattr(obj, s) </span><span style="color:#8959a8;">for </span><span style="color:#4271ae;">s </span><span style="color:#8959a8;">in </span><span style="color:#4271ae;">obj.__slots__])
+    </span><span style="color:#8959a8;">return </span><span style="color:#111111;">size
+</span></code></pre><h3 id="results">Results</h3>
+<p>These results were obtained with Python 3.7.4. Full code is available <a href="https://github.com/jfgreen/python-representation-sizes">here</a>.</p>
+<p>Before looking at the size of a compound data type, it's useful to know how
+much memory the primitive data types alone consume.</p>
+<table><thead><tr><th>Data</th><th>Size (Bytes)</th></tr></thead><tbody>
+<tr><td>'mango'</td><td>54</td></tr>
+<tr><td>123</td><td>28</td></tr>
+<tr><td>'red'</td><td>52</td></tr>
+<tr><td>total</td><td>134</td></tr>
+</tbody></table>
+<p>We can then measure the size of each representation and calculate the overhead
+added by each.</p>
+<table><thead><tr><th>Representation</th><th>Size (Bytes)</th><th>Overhead (Bytes)</th></tr></thead><tbody>
+<tr><td>Data class</td><td>480</td><td>346</td></tr>
+<tr><td>Data class (slots)</td><td>206</td><td>72</td></tr>
+<tr><td>Class</td><td>480</td><td>346</td></tr>
+<tr><td>Class (slots)</td><td>206</td><td>72</td></tr>
+<tr><td>Named tuple</td><td>214</td><td>80</td></tr>
+<tr><td>Typed named tuple</td><td>214</td><td>80</td></tr>
+<tr><td>Dictionary</td><td>544</td><td>410</td></tr>
+</tbody></table>
+<h3 id="a-bigger-test-benchmarking-a-million-fruits">A bigger test: Benchmarking a million fruits</h3>
+<p>While it's informative to measure the bytes consumed by a single data item, a
+more realistic benchmark would be to see how memory usage adds up as multiple
+items are processed.</p>
+<p>So instead lets create a small script that grow a list of items and print the
+sum of the <code>price</code> field.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#8e908c;">#!/usr/bin/env python3
+
+</span><span style="color:#8959a8;">import </span><span style="color:#111111;">sys
+</span><span style="color:#8959a8;">from </span><span style="color:#111111;">dataclasses </span><span style="color:#8959a8;">import </span><span style="color:#111111;">dataclass
+
+count </span><span style="color:#3e999f;">= </span><span style="color:#c99e00;">int</span><span style="color:#4271ae;">(sys.argv[</span><span style="color:#f07219;">1</span><span style="color:#4271ae;">])
+
+</span><span style="color:#111111;">@</span><span style="color:#c82728;">dataclass
+</span><span style="color:#8959a8;">class </span><span style="color:#c99e00;">DataClassFruit</span><span style="color:#111111;">:
+    name: </span><span style="color:#c99e00;">str
+    </span><span style="color:#111111;">price: </span><span style="color:#c99e00;">int
+    </span><span style="color:#111111;">colour: </span><span style="color:#c99e00;">str
+
+</span><span style="color:#8959a8;">def </span><span style="color:#4271ae;">fruit_as_dataclass</span><span style="color:#111111;">():
+    </span><span style="color:#8959a8;">return </span><span style="color:#c82728;">DataClassFruit</span><span style="color:#4271ae;">(</span><span style="color:#839c00;">&#39;mango&#39;</span><span style="color:#4271ae;">, </span><span style="color:#f07219;">123</span><span style="color:#4271ae;">, </span><span style="color:#839c00;">&#39;red&#39;</span><span style="color:#4271ae;">)
+
+</span><span style="color:#111111;">basket </span><span style="color:#3e999f;">= </span><span style="color:#111111;">[</span><span style="color:#c82728;">fruit_as_dataclass</span><span style="color:#4271ae;">() </span><span style="color:#8959a8;">for </span><span style="color:#c82728;">_ </span><span style="color:#8959a8;">in </span><span style="color:#4271ae;">range(count)</span><span style="color:#111111;">]
+
+total_price </span><span style="color:#3e999f;">= </span><span style="color:#4271ae;">sum((f.price </span><span style="color:#8959a8;">for </span><span style="color:#4271ae;">f </span><span style="color:#8959a8;">in </span><span style="color:#4271ae;">basket))
+
+print(total_price)
+</span></code></pre>
+<p>We can then invoke this script using the <code>time</code> utility and measure 
+the <a href="https://www.gnu.org/software/libc/manual/html_node/Resource-Usage.html">&quot;maximum resident set size&quot;</a> value. This tells us the maximum
+number of bytes of memory used simultaneously.</p>
+<pre style="background-color:#f9f9f9;">
+<code><span style="color:#111111;">/usr/bin/time -l dataclass.py 1000000
+123000000
+        1.22 real         1.14 user         0.07 sys
+ 227151872  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+     64116  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         9  voluntary context switches
+       288  involuntary context switches
+</span></code></pre>
+<p>Given a similar program for each of the representations, we can see how they
+compare.</p>
+<p>Here are the results for a <code>count</code> of 1000000:</p>
+<table><thead><tr><th>Representation</th><th>Max RSS (Bytes)</th></tr></thead><tbody>
+<tr><td>Data class</td><td>226988032</td></tr>
+<tr><td>Data class (slots)</td><td>113152000</td></tr>
+<tr><td>Class</td><td>225234944</td></tr>
+<tr><td>Class (slots)</td><td>111427584</td></tr>
+<tr><td>Named tuple</td><td>127430656</td></tr>
+<tr><td>Typed named tuple</td><td>128278528</td></tr>
+<tr><td>Dictionary</td><td>289476608</td></tr>
+</tbody></table>
+<h3 id="conclusion">Conclusion</h3>
+<p>We settled on using <code>typing.NamedTuple</code> to represent high volume data, and to
+use the richer <code>DataClass</code> for the lower volume collections.</p>
+<p>Whatever your use case, I hope the above measurements help you make an informed
+choice.</p>
+<h3 id="bonus-comparing-with-pympler">Bonus: Comparing with Pympler</h3>
+<p>To validate our findings, let's perform the same analysis using <code>asizeof</code> from
+the <a href="https://pypi.org/project/Pympler/">pympler</a> package.</p>
+<table><thead><tr><th>Data</th><th>Size (Bytes)</th></tr></thead><tbody>
+<tr><td>'mango'</td><td>56</td></tr>
+<tr><td>123</td><td>32</td></tr>
+<tr><td>'red'</td><td>56</td></tr>
+<tr><td>total</td><td>144</td></tr>
+</tbody></table>
+<p>Interestingly, pyampler reports the strings <code>'mango'</code> and <code>'red'</code> as consuming
+the same memory, despite being different lengths.</p>
+<p>This is because by default <code>asizeof</code> will return size measurements aligned to
+multiples of 8. I suspect this is due to assumptions about byte aligned memory
+access.</p>
+<table><thead><tr><th>Representation</th><th>Size (Bytes)</th><th>Overhead (Bytes)</th></tr></thead><tbody>
+<tr><td>Data class</td><td>496</td><td>352</td></tr>
+<tr><td>Data class (slots)</td><td>216</td><td>72</td></tr>
+<tr><td>Class</td><td>496</td><td>352</td></tr>
+<tr><td>Class (slots)</td><td>216</td><td>72</td></tr>
+<tr><td>Named tuple</td><td>224</td><td>80</td></tr>
+<tr><td>Typed named tuple</td><td>224</td><td>80</td></tr>
+<tr><td>Dictionary</td><td>560</td><td>416</td></tr>
+</tbody></table>
+<p>If we disable this behaviour, then pympler returns the exact same measurements
+as our home made <code>get_size</code> function.</p>
+
+
+    </body>
+</html>
